@@ -9,6 +9,6 @@ namespace SimplePkgMgr.Templates
     public class TRepo
     {
         public string Name { get; set; }
-        TPackage[] Packages { get; set; }
+        public TPackage[] Packages { get; set; }
     }
 }
