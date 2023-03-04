@@ -37,7 +37,7 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SimpleLogs4Net, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleLogs4Net.2.0.0\lib\netstandard2.0\SimpleLogs4Net.dll</HintPath>
+      <HintPath>packages\SimpleLogs4Net.2.0.0\lib\netstandard2.0\SimpleLogs4Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
