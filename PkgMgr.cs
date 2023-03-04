@@ -48,14 +48,12 @@ namespace SimplePkgMgr
             TRepo repo = null;
             try
             {
-                repo = JsonConvert.DeserializeObject<TRepo>(client.DownloadString(uri));
+                Repos.Add(JsonConvert.DeserializeObject<TRepo>(client.DownloadString(uri)));
             }
             catch
             {
                 return false;
             }
-
-            repo.
             return true;
         }
         public void Install(string pkgname)
@@ -69,7 +67,7 @@ namespace SimplePkgMgr
                         Directory.CreateDirectory(PkgsFolder + repo.Name);
                         Directory.CreateDirectory(PkgsFolder + repo.Name + "\\" + package.Name);
                         new ISR();
-                        ISR.InstallDir = PkgsFolder + repo.Name + "\\" + package.Name;
+                        ISR.InstallDir = PkgsFolder + repo.Name + "\\" + package.Name + "\\";
                         new WebClient().DownloadFile(package.InstallFileUrl,TempDir + package.Name+".is");
                         ISR.RunInstallScript(TempDir + package.Name + ".is");
                         File.Delete(TempDir + package.Name + ".is");
