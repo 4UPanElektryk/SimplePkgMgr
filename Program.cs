@@ -13,10 +13,10 @@ namespace SimplePkgMgr
             new LogConfiguration("Logs\\", OutputStream.Both);
             new ISR();
             //ISR.RunInstallScript(args[0]);
-            PkgMgr.PkgsFolder = "pkg\\";
-            PkgMgr.EtcFolder = "etc\\";
-            PkgMgr.TempDir = "tmp\\";
-            PkgMgr.RepoDBFile = "pkgs.db";
+            PkgMgr.PkgsFolder = AppDomain.CurrentDomain.BaseDirectory + "pkg\\";
+            PkgMgr.EtcFolder = AppDomain.CurrentDomain.BaseDirectory + "etc\\";
+            PkgMgr.TempDir = AppDomain.CurrentDomain.BaseDirectory + "tmp\\";
+            PkgMgr.RepoDBFile = AppDomain.CurrentDomain.BaseDirectory + "pkgs.db";
             PkgMgr.LoadRepoDB();
             PkgMgr.SaveRepoDB();
             //return;
@@ -24,7 +24,9 @@ namespace SimplePkgMgr
             {
                 if (args[0] == "list")
                 {
-                    PkgMgr.GetPackages("").ForEach((x) => Console.WriteLine(x));
+                    string[] packages = PkgMgr.GetPackages("").ToArray();
+                    Console.WriteLine("Following packages are avaible to be Installed:");
+                    Array.ForEach(packages, (string x) => Console.WriteLine(x));
                 }
                 else if (args[0] == "update")
                 {

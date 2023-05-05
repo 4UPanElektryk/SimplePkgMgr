@@ -239,7 +239,7 @@ namespace SimplePkgMgr
 			{
 				try
 				{
-					ret.Add((TRepo)JsonConvert.DeserializeObject(new WebClient().DownloadString(item)));
+					ret.Add(JsonConvert.DeserializeObject<TRepo>(new WebClient().DownloadString(item)));
 					Log.DebugMsg("Reached: " + item, EType.Normal);
 				}
 				catch (Exception)
