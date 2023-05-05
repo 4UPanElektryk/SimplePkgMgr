@@ -46,9 +46,10 @@ namespace SimplePkgMgr
 					"https://raw.githubusercontent.com/4UPanElektryk/MySpmPkgs/main/list.json",
 				};
 			}
+			Repos = GetReposFromWeb();
 			if (File.Exists(PkgsFolder + "installed.json"))
 			{
-				Installed = (List<TPackage>)JsonConvert.DeserializeObject(File.ReadAllText(PkgsFolder + "installed.json"));
+				Installed = JsonConvert.DeserializeObject<List<TPackage>>(File.ReadAllText(PkgsFolder + "installed.json"));
 			}
 			else
 			{
@@ -200,6 +201,10 @@ namespace SimplePkgMgr
 			{
 				foreach (TPackage package in repo.Packages)
 				{
+					if (pkgname == "")
+					{
+						packages.Add(repo.Name + "/" + package.Name);
+					}
 					if (package.Name == pkgname)
 					{
 						packages.Add(repo.Name + "/" + package.Name);
@@ -213,9 +218,6 @@ namespace SimplePkgMgr
 			List<string> packages = new List<string>();
 			if (upgradable)
 			{
-				List<TPackage> online = new List<TPackage> ();
-				foreach (TRepo repo in GetReposFromWeb())
-
 				foreach (TPackage item in Installed)
 				{
 					packages.Add(item.Name);

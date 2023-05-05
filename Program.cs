@@ -13,13 +13,18 @@ namespace SimplePkgMgr
             new LogConfiguration("Logs\\", OutputStream.Both);
             new ISR();
             //ISR.RunInstallScript(args[0]);
+            PkgMgr.PkgsFolder = "pkg\\";
+            PkgMgr.EtcFolder = "etc\\";
+            PkgMgr.TempDir = "tmp\\";
+            PkgMgr.RepoDBFile = "pkgs.db";
             PkgMgr.LoadRepoDB();
+            PkgMgr.SaveRepoDB();
             //return;
             if (args.Length == 1)
             {
                 if (args[0] == "list")
                 {
-
+                    PkgMgr.GetPackages("").ForEach((x) => Console.WriteLine(x));
                 }
                 else if (args[0] == "update")
                 {
