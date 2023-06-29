@@ -20,7 +20,7 @@ namespace SimplePkgMgr
 		public static string TempDir;
 		public static List<string> Repolocs;
 		public static List<TRepo> Repos;
-		public static List<TPackage> Installed;
+		public static List<string> Installed;
 		public static void LoadRepoDB()
 		{
 			if (!Directory.Exists(PkgsFolder))
@@ -35,9 +35,9 @@ namespace SimplePkgMgr
 			{
 				Directory.CreateDirectory(EtcFolder);
 			}
-			if (File.Exists(RepoDBFile))
+			if (File.Exists(EtcFolder + "sources.db"))
 			{
-				Repolocs = new List<string>(File.ReadAllLines(RepoDBFile));
+				Repolocs = new List<string>(File.ReadAllLines(EtcFolder + "sources.db"));
 			}
 			else
 			{
@@ -45,21 +45,27 @@ namespace SimplePkgMgr
 				{
 					"https://raw.githubusercontent.com/4UPanElektryk/MySpmPkgs/main/list.json",
 				};
+				File.WriteAllLines(EtcFolder + "sources.db", Repolocs);
 			}
-			Repos = GetReposFromWeb();
-			if (File.Exists(PkgsFolder + "installed.json"))
+			if (File.Exists(RepoDBFile))
 			{
-				Installed = JsonConvert.DeserializeObject<List<TPackage>>(File.ReadAllText(PkgsFolder + "installed.json"));
+				Repos = JsonConvert.DeserializeObject<List<TRepo>>(File.ReadAllText(RepoDBFile));
+			}
+			Repos = new List<TRepo>();
+			if (File.Exists(PkgsFolder + "installed.db"))
+			{
+				Installed = new List<string>(File.ReadAllLines(PkgsFolder + "installed.db"));
 			}
 			else
 			{
-				Installed = new List<TPackage>();
+				Installed = new List<string>();
 			}
 		}
 		public static void SaveRepoDB()
 		{
-			File.WriteAllLines(RepoDBFile, Repolocs);
-			File.WriteAllText(PkgsFolder + "installed.json", JsonConvert.SerializeObject(Installed));
+			File.WriteAllLines(EtcFolder + "sources.db", Repolocs);
+			File.WriteAllLines(PkgsFolder + "installed.db", Installed);
+			File.WriteAllText(RepoDBFile, JsonConvert.SerializeObject(Repos));
 		}
 		public static bool AddRepo(string uri)
 		{
@@ -132,27 +138,38 @@ namespace SimplePkgMgr
 		}
 		public static void InstallSingle(string pkgname)
 		{
+			TPackage package = null;
 			string pacrepo = pkgname.Split('/')[0];
-			string pacname = pkgname.Split('/')[1].Split('|')[0];
-			string link = pkgname.Substring(pkgname.Split('|')[0].Length + 1);
+			foreach (var item in Repos)
+			{
+				foreach (var items in item.Packages)
+				{
+					if (item.Name + "/" + items.Name == pkgname)
+					{
+						package = items;
+					}
+				}
+			}
 			Directory.CreateDirectory(PkgsFolder + pacrepo);
-			Directory.CreateDirectory(PkgsFolder + pacrepo + "\\" + pacname);
+			Directory.CreateDirectory(PkgsFolder + pacrepo + "\\" + package.Name);
 			Log.DebugMsg("Created Directories", EType.Informtion);
 			new ISR();
-			ISR.InstallDir = PkgsFolder + pacrepo + "\\" + pacname + "\\";
+			ISR.InstallDir = PkgsFolder + pacrepo + "\\" + package.Name + "\\";
 			try
 			{
-				new WebClient().DownloadFile(link, TempDir + pacname + ".is");
-				Log.DebugMsg("Reached: " + link, EType.Normal);
+				new WebClient().DownloadFile(package.InstallFileUrl, TempDir + package.Name + ".is");
+				Log.DebugMsg("Reached: " + package.InstallFileUrl, EType.Normal);
 			}
 			catch (Exception)
 			{
-				Log.DebugMsg("Failed to reach: " + link, EType.Warning);
+				Log.DebugMsg("Failed to reach: " + package.InstallFileUrl, EType.Warning);
 				return;
 			}
-			ISR.RunInstallScript(TempDir + pacname + ".is");
+			ISR.RunInstallScript(TempDir + package.Name + ".is");
 			Log.DebugMsg("Installed", EType.Informtion);
-			File.Delete(TempDir + pacname + ".is");
+			Installed.Add(pacrepo +"/"+ package.Name+"|" + package.Version);
+			SaveRepoDB();
+			File.Delete(TempDir + package.Name + ".is");
 		}
 		#region Querries
 		public static bool IsQuerry(string text)
@@ -215,22 +232,7 @@ namespace SimplePkgMgr
 		}
 		public static List<string> GetInstalledPackages(bool upgradable)
 		{
-			List<string> packages = new List<string>();
-			if (upgradable)
-			{
-				foreach (TPackage item in Installed)
-				{
-					packages.Add(item.Name);
-				}
-			}
-			else
-			{
-				foreach (TPackage item in Installed)
-				{
-					packages.Add(item.Name);
-				}
-			}
-			return packages;
+			return Installed;
 		}
 		public static List<TRepo> GetReposFromWeb()
 		{

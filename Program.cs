@@ -10,22 +10,19 @@ namespace SimplePkgMgr
     {
         static void Main(string[] args)
         {
-            new LogConfiguration("Logs\\", OutputStream.Both);
+            new LogConfiguration("Logs\\", OutputStream.File);
             new ISR();
-            //ISR.RunInstallScript(args[0]);
             PkgMgr.PkgsFolder = AppDomain.CurrentDomain.BaseDirectory + "pkg\\";
             PkgMgr.EtcFolder = AppDomain.CurrentDomain.BaseDirectory + "etc\\";
             PkgMgr.TempDir = AppDomain.CurrentDomain.BaseDirectory + "tmp\\";
             PkgMgr.RepoDBFile = AppDomain.CurrentDomain.BaseDirectory + "pkgs.db";
             PkgMgr.LoadRepoDB();
-            PkgMgr.SaveRepoDB();
-            //return;
             if (args.Length == 1)
             {
                 if (args[0] == "list")
                 {
                     string[] packages = PkgMgr.GetPackages("").ToArray();
-                    Console.WriteLine("Following packages are avaible to be Installed:");
+                    Console.WriteLine("Following packages are avaible to be Installed: ");
                     Array.ForEach(packages, (string x) => Console.WriteLine(x));
                 }
                 else if (args[0] == "update")
@@ -51,8 +48,10 @@ namespace SimplePkgMgr
                 {
                     if (args[1] == "installed")
                     {
-                        
-                    }
+						string[] packages = PkgMgr.GetInstalledPackages(false).ToArray();
+						Console.WriteLine("Following packages are installed on this system: ");
+						Array.ForEach(packages, (string x) => Console.WriteLine(x));
+					}
                     else if (args[1] == "upgradable")
                     {
 
