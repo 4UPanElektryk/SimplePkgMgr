@@ -44,10 +44,6 @@ namespace SimplePkgMgr.InstallScriptRuntime
                                 return;
                             }
                         }
-                        else
-                        {
-                            Log.Write("error");
-                        }
                     }
                 }
             }
