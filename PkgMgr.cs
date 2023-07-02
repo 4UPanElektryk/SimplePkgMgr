@@ -45,6 +45,7 @@ namespace SimplePkgMgr
 				{
 					"https://raw.githubusercontent.com/4UPanElektryk/MySpmPkgs/main/list.json",
 				};
+				SaveRepoDB();
 			}
 			Repos = GetReposFromWeb();
 			if (File.Exists(PkgsFolder + "installed.json"))
